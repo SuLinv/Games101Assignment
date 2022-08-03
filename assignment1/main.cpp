@@ -11,8 +11,11 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
 
     Eigen::Matrix4f translate;
-    translate << 1, 0, 0, -eye_pos[0], 0, 1, 0, -eye_pos[1], 0, 0, 1,
-        -eye_pos[2], 0, 0, 0, 1;
+    translate << 
+        1, 0, 0, -eye_pos[0], 
+        0, 1, 0, -eye_pos[1], 
+        0, 0, 1, -eye_pos[2], 
+        0, 0, 0, 1;
 
     view = translate * view;
 
@@ -26,6 +29,13 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // TODO: Implement this function
     // Create the model matrix for rotating the triangle around the Z axis.
     // Then return it.
+    float angle = rotation_angle * MY_PI / 180.0f;
+    model << 
+        std::cos(angle),-std::sin(angle),0,0,
+        std::sin(angle),std::cos(angle),0,0,
+        0,0,1,0,
+        0,0,0,1;
+
 
     return model;
 }
@@ -40,6 +50,35 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     // TODO: Implement this function
     // Create the projection matrix for the given parameters.
     // Then return it.
+    Eigen::Matrix4f perspToOrtho;
+    Eigen::Matrix4f orthoTrans;
+    Eigen::Matrix4f orthoScale;
+
+    perspToOrtho << 
+        zNear,0,0,0,
+        0,zNear,0,0,
+        0,0,zNear+zFar,-zNear*zFar,
+        0,0,1,0;
+    
+    float eyefov_half = eye_fov * 0.5 * MY_PI / 180.0f;
+    float yTop = std::tan(eyefov_half) * -zNear;
+    float yBottom = -yTop;
+    float xRight = yTop * aspect_ratio;
+    float xLeft = -xRight;
+
+    orthoTrans <<
+        1,0,0,-(xRight+xLeft)/2,
+        0,1,0,-(yTop+yBottom)/2,
+        0,0,1,-(zNear+zFar)/2,
+        0,0,0,1;
+
+    orthoScale <<
+        2/(xRight-xLeft),0,0,0,
+        0,2/(yTop-yBottom),0,0,
+        0,0,2/(zNear-zFar),0,
+        0,0,0,1;
+    
+    projection = (orthoScale * orthoTrans) * perspToOrtho * projection;
 
     return projection;
 }
