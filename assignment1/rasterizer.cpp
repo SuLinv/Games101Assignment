@@ -149,12 +149,14 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
     {
         Triangle t;
 
+        //转化为齐次坐标并进行mvp变换
         Eigen::Vector4f v[] = {
                 mvp * to_vec4(buf[i[0]], 1.0f),
                 mvp * to_vec4(buf[i[1]], 1.0f),
                 mvp * to_vec4(buf[i[2]], 1.0f)
         };
 
+        //w坐标归一化
         for (auto& vec : v) {
             vec /= vec.w();
         }
