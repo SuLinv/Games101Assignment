@@ -83,6 +83,28 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     return projection;
 }
 
+Eigen::Matrix4f get_rotation(Eigen::Vector3f axis, float angle) {
+    angle = angle / 180 * MY_PI;
+    Eigen::Matrix4f any_rotation = Eigen::Matrix4f::Zero();
+    any_rotation(3, 3) = 1;
+    
+    Eigen::Vector3f normal_axis = axis.normalized();
+
+    Eigen::Matrix3f mult_factor;
+    mult_factor << 0, -normal_axis.z(), normal_axis.y(),
+        normal_axis.z(), 0, -normal_axis.x(),
+        -normal_axis.y(), normal_axis.x(), 0;
+
+    mult_factor = cos(angle) * Eigen::Matrix3f::Identity()
+        + (1 - cos(angle)) * normal_axis * normal_axis.transpose()
+        + sin(angle) * mult_factor;
+
+    any_rotation.block(0, 0, 2, 2) = mult_factor.block(0,0,2,2);
+
+
+    return any_rotation;
+}
+
 int main(int argc, const char** argv)
 {
     float angle = 0;
@@ -135,6 +157,7 @@ int main(int argc, const char** argv)
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
+        r.set_model(get_rotation(Eigen::Vector3f(-1, 1, 0), angle));
 
         r.draw(pos_id, ind_id, rst::Primitive::Triangle);
 
