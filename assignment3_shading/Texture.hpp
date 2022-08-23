@@ -22,8 +22,14 @@ public:
 
     int width, height;
 
+    // 返回图片uv点的颜色
     Eigen::Vector3f getColor(float u, float v)
     {
+        //坐标限定
+        if (u < 0) u = 0;
+		if (u > 1) u = 1;
+		if (v < 0) v = 0;
+		if (v > 1) v = 1;
         auto u_img = u * width;
         auto v_img = (1 - v) * height;
         auto color = image_data.at<cv::Vec3b>(v_img, u_img);
