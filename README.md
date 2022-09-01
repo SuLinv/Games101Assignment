@@ -1,4 +1,6 @@
 # Games101Assignment
+## Ray Tracing By BVH
+![image](assignment6_rayBounding_BVH/out.png)
 ## Whittted-Style Ray Tracing
 ![image](assignment5_rayTracing/out.png)
 ## Bezier Curve
